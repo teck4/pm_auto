@@ -22,6 +22,7 @@ DEFAULT_CONFIG = {
     'rgb_style': 'rainbow',
     'rgb_speed': 0,
     'oled_enable': True,
+    "oled_brightness": 100,
     'oled_rotation': 0,
     'oled_disk': 'total',  # 'total' or the name of the disk, normally 'mmcblk0' for SD Card, 'nvme0n1' for NVMe SSD
     'oled_network_interface': 'all',  # 'all' or the name of the interface, normally 'wlan0' for WiFi, 'eth0' for Ethernet
@@ -102,6 +103,9 @@ class PMAuto():
     @log_error
     def update_config(self, config):
         self.log.debug(f"Update config: {config}")
+        if 'oled_brightness' in config:
+            if self.oled is not None:
+                self.oled.set_display_brightness(config['oled_brightness'])
         if 'interval' in config:
             if not isinstance(config['interval'], (int, float)):
                 self.log.error("Invalid interval")
@@ -200,6 +204,8 @@ class OLEDAuto():
         if "oled_enable" in config:
             self.log.debug(f"Update oled_enable to {config['oled_enable']}")
             self.oled_enable = config['oled_enable']
+        if 'oled_brightness' in config:
+            self.set_display_brightness(config['oled_brightness'])
         if "oled_rotation" in config:
             self.log.debug(f"Update oled_rotation to {config['oled_rotation']}")
             self.set_rotation(config['oled_rotation'])
@@ -211,6 +217,9 @@ class OLEDAuto():
             self.ip_interface = config['oled_network_interface']
 
     @log_error
+    def set_display_brightness(self, brightness):
+        self.oled.set_contrast_percent(brightness)
+    
     def set_rotation(self, rotation):
         self.oled.set_rotation(rotation)
 
