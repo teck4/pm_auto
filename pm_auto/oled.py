@@ -264,6 +264,16 @@ class OLED():
     def set_rotation(self, rotation):
         self.rotation = rotation
 
+    def set_contrast_percent(self, percent):
+        # set_contrast allows 0-255, but out of precaution cap brightness
+        # to default values used elsewhere
+        if self.oled._vccstate == SSD1306_EXTERNALVCC:
+            max = 0x9F
+        else:
+            max = 0xCF
+        value = round(max * (percent/100))
+        self.oled.set_contrast(value)
+
     def is_ready(self):
         return self._is_ready
 
